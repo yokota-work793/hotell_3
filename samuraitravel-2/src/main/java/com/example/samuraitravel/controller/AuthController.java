@@ -56,7 +56,7 @@ public class AuthController {
 			HttpServletRequest httpServletRequest) {
 		
 		// メールアドレスが登録済みであれば、BindingResultオブジェクトにエラー内容を追加する
-		if (userService.isEmailRequesterd(signupForm.getEmail())) {
+		if (userService.isEmailRegistered(signupForm.getEmail())) {
 			FieldError fieldError = new FieldError(bindingResult.getObjectName(), "email", "すでに登録済みのメールアドレスです。");
 			bindingResult.addError(fieldError);
 		}

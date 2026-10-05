@@ -26,7 +26,7 @@ public class WebSecurityConfig {
 						"/storage/**",
 						"/",
 						"/signup/**",
-						"/signup/verify")
+						"/houses/**")
 				.permitAll()
 				
 				// 管理者にのみアクセスを許可するURL
