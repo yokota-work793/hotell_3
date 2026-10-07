@@ -132,7 +132,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 								<div sec:authorize="isAuthenticated()" class="col-lg-4 px-0 ps-lg-4 mb-4">
 									<div class="card">
 										<div class="card-body">
-											<form method="get" th:actuon="@{/houses/{id}/reservations/input(id=${house.getId()})}"
+											<form method="get" th:action="@{/houses/{id}/reservations/input(id=${house.getId()})}"
 												th:object="${reservationInputForm}">
 												<div class="form-group mb-2">
 													<label for="fromCheckinDateToCheckoutDate"

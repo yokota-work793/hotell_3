@@ -27,7 +27,8 @@ public class WebSecurityConfig {
 						"/",
 						"/signup/**",
 						"/houses/",
-						"/houses/{id}")
+						"/houses/{id}",
+						"/stripe/webhok")
 				.permitAll()
 				
 				// 管理者にのみアクセスを許可するURL
@@ -55,6 +56,10 @@ public class WebSecurityConfig {
 						// ログアウト時のリダイレクト先URL
 						.logoutSuccessUrl("/?loggedOut")
 						.permitAll()
+						)
+				
+				.csrf((csrf) -> csrf
+						.ignoringRequestMatchers("/stripe/webhok")
 						);
 		
 		return http.build();

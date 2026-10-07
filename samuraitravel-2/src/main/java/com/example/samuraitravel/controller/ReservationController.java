@@ -2,6 +2,8 @@ package com.example.samuraitravel.controller;
 
 import java.time.LocalDate;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -26,17 +28,20 @@ import com.example.samuraitravel.repository.HouseRepository;
 import com.example.samuraitravel.repository.ReservationRepository;
 import com.example.samuraitravel.security.UserDetailsImpl;
 import com.example.samuraitravel.service.ReservationService;
+import com.example.samuraitravel.service.StripeService;
 
 @Controller
 public class ReservationController {
 	private final ReservationRepository reservationRepository;
 	private final HouseRepository houseRepository;
 	private final ReservationService reservationService;
+	private final StripeService stripeService;
 	
-	public ReservationController(ReservationRepository reservationRepository, HouseRepository houseRepository, ReservationService reservationService) {
+	public ReservationController(ReservationRepository reservationRepository, HouseRepository houseRepository, ReservationService reservationService, StripeService stripeService) {
 		this.reservationRepository = reservationRepository;
 		this.houseRepository = houseRepository;
 		this.reservationService = reservationService;
+		this.stripeService = stripeService;
 	}
 	
 	@GetMapping("/reservations")
@@ -88,7 +93,9 @@ public class ReservationController {
 			@PathVariable(name = "id") Integer id,
 			@ModelAttribute ReservationInputForm reservationInputForm,
 			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+			HttpServletRequest httpAServletRequest,
 			Model model) {
+	    
 		House house = houseRepository.getReferenceById(id);
 		User user = userDetailsImpl.getUser();
 		
@@ -108,10 +115,22 @@ public class ReservationController {
 				reservationInputForm.getNumberOfPeople(),
 				amount);
 		
+		String sessionId = stripeService.createStripeSession(house.getName(), reservationRegisterForm, httpAServletRequest);
+		
 		model.addAttribute("house", house);
 		model.addAttribute("reservationRegisterForm", reservationRegisterForm);
+		model.addAttribute("sessionId", sessionId);
 		
 		return "reservations/confirm";
 	}
+	
+	/*
+	@PostMapping("/houses/{id}/reservations/create")
+	public String create(@ModelAttribute ReservationRegisterForm reservationRegisterForm) {
+		reservationService.create(reservationRegisterForm);
+		
+		return "redirect:/reservations?reserved";
+	}
+	*/
 	
 }
