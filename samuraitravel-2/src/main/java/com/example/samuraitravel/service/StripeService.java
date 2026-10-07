@@ -1,7 +1,6 @@
 package com.example.samuraitravel.service;
 
 import java.util.Map;
-import java.util.Optional;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -12,7 +11,6 @@ import com.example.samuraitravel.form.ReservationRegisterForm;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
-import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.stripe.param.checkout.SessionRetrieveParams;
@@ -63,6 +61,7 @@ public class StripeService {
 				.build();
 		try {
 			Session session = Session.create(params);
+			
 			return session.getId();
 		} catch (StripeException e) {
 			e.printStackTrace();
@@ -72,19 +71,19 @@ public class StripeService {
 	
 	// セッションから予約情報を取得し、ReservationServiceクラスを介してデータベースに登録する
 	public void processSessionCompleted(Event event) {
-		Optional<StripeObject> optionalStripeObject = event.getDataObjectDeserializer().getObject();
-		optionalStripeObject.ifPresent(stripeObject -> {
-			Session session = (Session)stripeObject;
+			
+			Session session = (Session) event.getData().getObject();
 			SessionRetrieveParams params = SessionRetrieveParams.builder().addExpand("payment_intent") .build();
 			
 			try {
 				session = Session.retrieve(session.getId(), params, null);
+				
 				Map<String, String> paymentIntentObject = session.getPaymentIntentObject().getMetadata();
+				
 				reservationService.create(paymentIntentObject);
+				
 			} catch (StripeException e) {
 				e.printStackTrace();
 			}
-		});
 	}
-
 }

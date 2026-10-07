@@ -28,7 +28,7 @@ public class WebSecurityConfig {
 						"/signup/**",
 						"/houses/",
 						"/houses/{id}",
-						"/stripe/webhok")
+						"/stripe/webhook")
 				.permitAll()
 				
 				// 管理者にのみアクセスを許可するURL
@@ -59,7 +59,7 @@ public class WebSecurityConfig {
 						)
 				
 				.csrf((csrf) -> csrf
-						.ignoringRequestMatchers("/stripe/webhok")
+						.ignoringRequestMatchers("/stripe/webhook")
 						);
 		
 		return http.build();

@@ -18,7 +18,7 @@ import com.stripe.net.Webhook;
 public class StripeWebhookController {
 	private final StripeService stripeService;
 	
-	@Value("${stripe.api-key")
+	@Value("${stripe.api-key}")
 	private String stripeApiKey;
 	
 	@Value("${stripe.webhook-secret}")
@@ -29,12 +29,16 @@ public class StripeWebhookController {
 	}
 	
 	@PostMapping("/stripe/webhook")
-	public ResponseEntity<String> webhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
+	public ResponseEntity<String> webhook(
+			@RequestBody String payload, 
+			@RequestHeader("Stripe-Signature") String sigHeader) {
+		
 		Stripe.apiKey = stripeApiKey;
 		Event event = null;
 		
 		try {
-			event = Webhook.constructEvent(payload, sigHeader, sigHeader);
+			event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
+			
 		} catch (SignatureVerificationException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST) .body(null);
 		}
